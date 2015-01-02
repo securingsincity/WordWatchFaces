@@ -125,8 +125,8 @@ public class WordBatteryWFService extends AbstractFaceService {
                 canvas.drawText(hour, centerX-80, centerY-50, mHourPaint);
                 float minuteY = centerY;
                 for (String line: minutes.split("\n")) {
-                    canvas.drawText(line, centerX-80, minuteY, mHourPaint);
-                    minuteY += -mHourPaint.ascent() + mHourPaint.descent();
+                    canvas.drawText(line, centerX-80, minuteY, mMinutePaint);
+                    minuteY += -mMinutePaint.ascent() + mMinutePaint.descent();
                 }
             }
 
