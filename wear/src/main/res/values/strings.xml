@@ -2,4 +2,58 @@
     <string name="app_name">WordsBattery</string>
     <string name="digital_am">AM</string>
     <string name="digital_pm">PM</string>
+    <string name="oh_clock">o\'clock</string>
+    <string name="oh">oh </string>
+    <string name="noon">noon</string>
+    <string name="midnight">midnight</string>
+    <string-array name="teens">
+        <item></item>
+        <item>eleven</item>
+       <item>twelve</item>
+       <item>thirteen</item>
+       <item>fourteen</item>
+       <item>fifteen</item>
+       <item>sixteen</item>
+       <item>seventeen</item>
+       <item>eighteen</item>
+       <item>nineteen</item>
+    </string-array>
+    <string-array name="tens">
+        <item></item>
+       <item>ten</item>
+       <item>twenty</item>
+       <item>thirty</item>
+       <item>forty</item>
+       <item>fifty</item>
+       <item>sixty</item>
+       <item>seventy</item>
+       <item>eighty</item>
+       <item>ninety</item>
+    </string-array>
+    <string-array name="ones">
+        <item></item>
+       <item>one</item>
+       <item>two</item>
+       <item>three</item>
+       <item>four</item>
+       <item>five</item>
+       <item>six</item>
+       <item>seven</item>
+       <item>eight</item>
+       <item>nine</item>
+    </string-array>
+    <string-array name="months">
+       <item>jan </item>
+       <item>feb </item>
+       <item>mar </item>
+       <item>apr </item>
+       <item>may </item>
+       <item>jun </item>
+       <item>jul </item>
+       <item>aug </item>
+       <item>sep </item>
+       <item>oct </item>
+       <item>nov </item>
+       <item>dec </item>
+    </string-array>
 </resources>

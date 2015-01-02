@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by james on 1/1/15.
  */
-public abstract class AbstractWBWatchFaceService extends CanvasWatchFaceService {
+public abstract class AbstractFaceService extends CanvasWatchFaceService {
     public static final Typeface BOLD_TYPEFACE =
             Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD);
     public static final Typeface NORMAL_TYPEFACE =
@@ -33,7 +33,7 @@ public abstract class AbstractWBWatchFaceService extends CanvasWatchFaceService 
     public static final long MUTE_UPDATE_RATE_MS = TimeUnit.MINUTES.toMillis(1);
 
     public class Engine extends CanvasWatchFaceService.Engine {
-        private static final String TAG = "AbstractWBWatchFaceService";
+        private static final String TAG = "AbstractFaceService";
         static final int MSG_UPDATE_TIME = 0;
 
         /* a time object */
@@ -63,7 +63,7 @@ public abstract class AbstractWBWatchFaceService extends CanvasWatchFaceService 
         };
 
 
-        final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
+        protected final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 mTime.clear(intent.getStringExtra("time-zone"));
@@ -92,7 +92,7 @@ public abstract class AbstractWBWatchFaceService extends CanvasWatchFaceService 
          * @param defaultInteractiveColor
          * @return the finished text paint
          */
-        private Paint createTextPaint(int defaultInteractiveColor) {
+        protected Paint createTextPaint(int defaultInteractiveColor) {
             return createTextPaint(defaultInteractiveColor, NORMAL_TYPEFACE);
         }
         /**
@@ -101,8 +101,11 @@ public abstract class AbstractWBWatchFaceService extends CanvasWatchFaceService 
          * @param @Typeface
          * @return the finished text paint
          */
-        private Paint createTextPaint(int defaultInteractiveColor, Typeface typeface) {
+        protected Paint createTextPaint(int defaultInteractiveColor, Typeface typeface) {
             Paint paint = new Paint();
+
+            paint.setARGB(255, 200, 200, 200);
+            paint.setTextSize(40);
             paint.setColor(defaultInteractiveColor);
             paint.setTypeface(typeface);
             paint.setAntiAlias(true);

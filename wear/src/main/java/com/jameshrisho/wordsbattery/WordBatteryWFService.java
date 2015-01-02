@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.Time;
@@ -14,7 +16,7 @@ import android.view.SurfaceHolder;
 
 import java.util.TimeZone;
 
-public class WordBatteryWFService extends AbstractWBWatchFaceService {
+public class WordBatteryWFService extends AbstractFaceService {
     private static final String TAG = "WordBatteryWFService";
 
 
@@ -29,7 +31,7 @@ public class WordBatteryWFService extends AbstractWBWatchFaceService {
     }
 
     /* implement service callback methods */
-    private class Engine extends AbstractWBWatchFaceService.Engine {
+    private class Engine extends AbstractFaceService.Engine {
 
         /* device features */
         boolean mLowBitAmbient;
@@ -38,12 +40,10 @@ public class WordBatteryWFService extends AbstractWBWatchFaceService {
         Bitmap mBackgroundBitmap;
         Bitmap mBackgroundScaledBitmap;
         Paint mHourPaint;
+        Paint mAMPMPaint;
         Paint mMinutePaint;
         Paint mTickPaint;
         boolean mMute;
-
-
-
 
         @Override
         public void onCreate(SurfaceHolder holder) {
@@ -62,29 +62,11 @@ public class WordBatteryWFService extends AbstractWBWatchFaceService {
 //            Resources resources = AnalogWatchFaceService.this.getResources();
 //            Drawable backgroundDrawable = resources.getDrawable(R.drawable.bg);
 //            mBackgroundBitmap = ((BitmapDrawable) backgroundDrawable).getBitmap();
+            mHourPaint = createTextPaint(Color.parseColor("WHITE"), Typeface.DEFAULT_BOLD);
+            mMinutePaint = createTextPaint(Color.parseColor("WHITE"));
+            mAMPMPaint = createTextPaint(Color.parseColor("WHITE"));
 
-            mHourPaint = new Paint();
-            mHourPaint.setARGB(255, 200, 200, 200);
-            mHourPaint.setStrokeWidth(5.f);
-            mHourPaint.setAntiAlias(true);
-            mHourPaint.setStrokeCap(Paint.Cap.ROUND);
 
-            mMinutePaint = new Paint();
-            mMinutePaint.setARGB(255, 200, 200, 200);
-            mMinutePaint.setStrokeWidth(3.f);
-            mMinutePaint.setAntiAlias(true);
-            mMinutePaint.setStrokeCap(Paint.Cap.ROUND);
-
-//            mSecondPaint = new Paint();
-//            mSecondPaint.setARGB(255, 255, 0, 0);
-//            mSecondPaint.setStrokeWidth(2.f);
-//            mSecondPaint.setAntiAlias(true);
-//            mSecondPaint.setStrokeCap(Paint.Cap.ROUND);
-//
-            mTickPaint = new Paint();
-            mTickPaint.setARGB(100, 255, 255, 255);
-            mTickPaint.setStrokeWidth(2.f);
-            mTickPaint.setAntiAlias(true);
 
             mTime = new Time();
         }
@@ -116,49 +98,41 @@ public class WordBatteryWFService extends AbstractWBWatchFaceService {
 //                mBackgroundScaledBitmap = Bitmap.createScaledBitmap(mBackgroundBitmap,
 //                        width, height, true /* filter */);
 //            }
-//            canvas.drawBitmap(mBackgroundScaledBitmap, 0, 0, null);
+            // Draw the background.
+            Paint mBackgroundPaint = new Paint();
+            mBackgroundPaint.setColor(Color.BLACK);
+            canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
+
 
             // Find the center. Ignore the window insets so that, on round watches with a
             // "chin", the watch face is centered on the entire screen, not just the usable
             // portion.
             float centerX = width / 2f;
             float centerY = height / 2f;
+            //let's build a set of text so if its 4:30 it reads FourThirty
+            WordDateHelpers wordDateHelpers = new WordDateHelpers(getApplicationContext());
+            // it's midnight!
+            if (mTime.minute == 0 && mTime.hour == 0) {
+                canvas.drawText(wordDateHelpers.getMidnight(),centerX-70,centerY-40,mHourPaint);
+            } else if (mTime.minute == 0 && mTime.hour == 12) {
+                //it's noon
+                canvas.drawText(wordDateHelpers.getNoon(),centerX-70,centerY-40,mHourPaint);
+            } else {
+                String hour = wordDateHelpers.getHour(mTime.hour);
 
-            // Draw the ticks.
-            float innerTickRadius = centerX - 10;
-            float outerTickRadius = centerX;
-            for (int tickIndex = 0; tickIndex < 12; tickIndex++) {
-                float tickRot = (float) (tickIndex * Math.PI * 2 / 12);
-                float innerX = (float) Math.sin(tickRot) * innerTickRadius;
-                float innerY = (float) -Math.cos(tickRot) * innerTickRadius;
-                float outerX = (float) Math.sin(tickRot) * outerTickRadius;
-                float outerY = (float) -Math.cos(tickRot) * outerTickRadius;
-                canvas.drawLine(centerX + innerX, centerY + innerY,
-                        centerX + outerX, centerY + outerY, mTickPaint);
+                String minutes = wordDateHelpers.getMinutes(mTime.minute);
+//            String AMPMString = wordDateHelpers.getAmPmString(mTime.hour);
+                canvas.drawText(hour, centerX-80, centerY-50, mHourPaint);
+                float minuteY = centerY;
+                for (String line: minutes.split("\n")) {
+                    canvas.drawText(line, centerX-80, minuteY, mHourPaint);
+                    minuteY += -mHourPaint.ascent() + mHourPaint.descent();
+                }
             }
 
-            float secRot = mTime.second / 30f * (float) Math.PI;
-            int minutes = mTime.minute;
-            float minRot = minutes / 30f * (float) Math.PI;
-            float hrRot = ((mTime.hour + (minutes / 60f)) / 6f ) * (float) Math.PI;
+//            canvas.drawText(AMPMString, centerX-20, centerY+70, mAMPMPaint);
 
-            float secLength = centerX - 20;
-            float minLength = centerX - 40;
-            float hrLength = centerX - 80;
 
-//            if (!isInAmbientMode()) {
-//                float secX = (float) Math.sin(secRot) * secLength;
-//                float secY = (float) -Math.cos(secRot) * secLength;
-//                canvas.drawLine(centerX, centerY, centerX + secX, centerY + secY, mSecondPaint);
-//            }
-
-            float minX = (float) Math.sin(minRot) * minLength;
-            float minY = (float) -Math.cos(minRot) * minLength;
-            canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY, mMinutePaint);
-
-            float hrX = (float) Math.sin(hrRot) * hrLength;
-            float hrY = (float) -Math.cos(hrRot) * hrLength;
-            canvas.drawLine(centerX, centerY, centerX + hrX, centerY + hrY, mHourPaint);
         }
 
         private void registerReceiver() {
